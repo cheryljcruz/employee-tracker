@@ -37,6 +37,8 @@ const startPrompt = () => {
           getRole();
         } else if (data.start === "View all Employees") {
           getEmployee();
+        } else if (data.start === "Add a Department") {
+          addDept();
         }
       })
   );
@@ -102,6 +104,34 @@ getDepartment = (data) => {
     returnPrompt();
   });
 };
+
+// add department
+addDept = () => {
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "deptName",
+        message: "What is the name of the department?",
+      },
+    ])
+    .then((deptData) => {
+      const sql = `INSERT INTO department (name)
+    VALUES (?);`;
+      const params = deptData.deptName;
+      db.query(sql, params, (err, results) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log(`${deptData.deptName} has been added.`);
+        returnPrompt();
+      });
+    });
+};
+// add role
+
+// add employee
+// update role
 
 // connect to db
 db.connect((err) => {
