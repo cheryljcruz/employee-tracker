@@ -22,9 +22,50 @@ const startPrompt = () => {
         "Add a Department",
         "Add a Role",
         "Add an Employee",
-        "Update an Employee role",
+        "Update Employee role",
         "Exit",
       ],
     },
   ]);
+  // parse selection
 };
+
+// return to selection
+
+// view employee
+getEmployee = (data) => {
+  const sql = `SELECT * FROM employee;`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      throw err;
+    }
+    console.table(result);
+    //return to prompt
+  });
+};
+
+// view role
+getRole = (data) => {
+  const sql = `SELECT * FROM role;`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      throw err;
+    }
+    console.table(result);
+
+    // return to prompt
+  });
+};
+
+// view department
+getDepartment = (data) => {
+  const sql = `SELECT * FROM department;`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      throw err;
+    }
+    console.table(result);
+
+    // return to prompt
+  })
+}
