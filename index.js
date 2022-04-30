@@ -39,6 +39,8 @@ const startPrompt = () => {
           getEmployee();
         } else if (data.start === "Add a Department") {
           addDept();
+        } else if (data.start === "Add a Role") {
+          addRole();
         }
       })
   );
@@ -129,7 +131,38 @@ addDept = () => {
     });
 };
 // add role
-
+addRole = () => {
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "roleName",
+        message: "What is the title of this role?",
+      },
+      {
+        type: "input",
+        name: "salary",
+        message: "What is the salary for this role?",
+      },
+      {
+        type: "input",
+        name: "deptId",
+        message: "What is the associated department id for this role?",
+      },
+    ])
+    .then((roleData) => {
+      const sql = `INSERT INTO role (title, salary, department_id)
+    VALUES (?, ?, ?)`;
+      const params = [roleData.roleName, roleData.salary, roleData.deptId];
+      db.query(sql, params, (err, res) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log(`${roleData.roleName} has been added.`);
+        returnPrompt();
+      });
+    });
+};
 // add employee
 // update role
 
