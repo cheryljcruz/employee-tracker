@@ -16,7 +16,7 @@ const startPrompt = () => {
         {
           type: "list",
           name: "start",
-          message: "Hello! Please select an option!",
+          message: "Hello, please select an option!",
           choices: [
             "View all Departments",
             "View all Roles",
@@ -43,6 +43,8 @@ const startPrompt = () => {
           addRole();
         } else if (data.start === "Add an Employee") {
           addEmployee();
+        } else if (data.start === "Update Employee role") {
+          updateRole();
         }
       })
   );
@@ -188,7 +190,7 @@ addEmployee = () => {
         type: "confirm",
         name: "managerConfirm",
         message: "Does this employee have a reporting manager?",
-        default: false
+        default: false,
       },
       {
         type: "input",
@@ -238,7 +240,34 @@ addEmployee = () => {
     });
 };
 // update role
+updateRole = () => {
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "updateId",
+        message: "Insert employee id to update",
+      },
+      {
+        type: "input",
+        name: "idRole",
+        message: "Insert the role id to update",
+      },
+    ])
+    .then((employeeUpdate) => {
+      const sql = `UPDATE employee SET role_id = ?
+    WHERE id = ?;`;
+      const params = [employeeUpdate.idRole, employeeUpdate.updateId];
+      db.query(sql, params, (err, res) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log("Information updated");
 
+        returnPrompt();
+      });
+    });
+};
 // connect to db
 db.connect((err) => {
   if (err) throw err;
