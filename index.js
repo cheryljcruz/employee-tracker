@@ -41,6 +41,8 @@ const startPrompt = () => {
           addDept();
         } else if (data.start === "Add a Role") {
           addRole();
+        } else if (data.start === "Add an Employee") {
+          addEmployee();
         }
       })
   );
@@ -69,11 +71,11 @@ const returnPrompt = () => {
 // view employee
 getEmployee = (data) => {
   const sql = `SELECT * FROM employee;`;
-  db.query(sql, (err, result) => {
+  db.query(sql, (err, res) => {
     if (err) {
       throw err;
     }
-    console.table(result);
+    console.table(res);
     //return to prompt
     returnPrompt();
   });
@@ -82,7 +84,7 @@ getEmployee = (data) => {
 // view role
 getRole = (data) => {
   const sql = `SELECT * FROM role;`;
-  db.query(sql, (err, result) => {
+  db.query(sql, (err, res) => {
     if (err) {
       throw err;
     }
@@ -96,11 +98,11 @@ getRole = (data) => {
 // view department
 getDepartment = (data) => {
   const sql = `SELECT * FROM department;`;
-  db.query(sql, (err, result) => {
+  db.query(sql, (err, res) => {
     if (err) {
       throw err;
     }
-    console.table(result);
+    console.table(res);
 
     // return to prompt
     returnPrompt();
@@ -121,7 +123,7 @@ addDept = () => {
       const sql = `INSERT INTO department (name)
     VALUES (?);`;
       const params = deptData.deptName;
-      db.query(sql, params, (err, results) => {
+      db.query(sql, params, (err, res) => {
         if (err) {
           console.log(err);
         }
@@ -164,6 +166,77 @@ addRole = () => {
     });
 };
 // add employee
+addEmployee = () => {
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "first",
+        message: "What is the employee's first name?",
+      },
+      {
+        type: "input",
+        name: "last",
+        message: "What is the employee's last name?",
+      },
+      {
+        type: "input",
+        name: "roleId",
+        message: "What is the employee's role id?",
+      },
+      {
+        type: "confirm",
+        name: "managerConfirm",
+        message: "Does this employee have a reporting manager?",
+        default: false
+      },
+      {
+        type: "input",
+        name: "managerId",
+        message: "What is the manager id?",
+        when: ({ managerConfirm }) => managerConfirm,
+      },
+    ])
+    .then((employeeData) => {
+      if (employeeData.managerConfirm === true) {
+        const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+        VALUES (?, ?, ?, ?);`;
+        const params = [
+          employeeData.first,
+          employeeData.last,
+          employeeData.roleId,
+          employeeData.managerId,
+        ];
+        db.query(sql, params, (err, res) => {
+          if (err) {
+            console.log(err);
+          }
+          console.log(
+            `${(employeeData.first, employeeData.last)} has been added`
+          );
+
+          returnPrompt();
+        });
+      }
+      const sql = `INSERT INTO employee (first_name, last_name, role_id)
+        VALUES (?, ?, ?);`;
+      const params = [
+        employeeData.first,
+        employeeData.last,
+        employeeData.roleId,
+      ];
+      db.query(sql, params, (err, res) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log(
+          `${(employeeData.first, employeeData.last)} has been added.`
+        );
+
+        returnPrompt();
+      });
+    });
+};
 // update role
 
 // connect to db
