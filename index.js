@@ -45,6 +45,8 @@ const startPrompt = () => {
           addEmployee();
         } else if (data.start === "Update Employee role") {
           updateRole();
+        } else if (data.start === "Exit") {
+          console.log("Goodbye!");
         }
       })
   );
@@ -71,8 +73,12 @@ const returnPrompt = () => {
 };
 
 // view employee
+// left join clause
 getEmployee = (data) => {
-  const sql = `SELECT * FROM employee;`;
+  const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title AS title, department.name AS department, role.salary AS salary, employee.manager_id
+   FROM employee
+   LEFT JOIN role ON employee.role_id = role.id
+   LEFT JOIN department ON role.department_id = department.id;`;
   db.query(sql, (err, res) => {
     if (err) {
       throw err;
@@ -85,12 +91,14 @@ getEmployee = (data) => {
 
 // view role
 getRole = (data) => {
-  const sql = `SELECT * FROM role;`;
+  const sql = `SELECT role.id, role.title, department.name AS department_name, role.salary
+  FROM role
+  LEFT JOIN department ON role.department_id = department.id;`;
   db.query(sql, (err, res) => {
     if (err) {
       throw err;
     }
-    console.table(result);
+    console.table(res);
 
     // return to prompt
     returnPrompt();
@@ -200,7 +208,7 @@ addEmployee = () => {
       },
     ])
     .then((employeeData) => {
-      if (employeeData.managerConfirm === true) {
+      if (employeeData.managerConfirm) {
         const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
         VALUES (?, ?, ?, ?);`;
         const params = [
@@ -220,24 +228,18 @@ addEmployee = () => {
           returnPrompt();
         });
       }
-      const sql = `INSERT INTO employee (first_name, last_name, role_id)
-        VALUES (?, ?, ?);`;
-      const params = [
-        employeeData.first,
-        employeeData.last,
-        employeeData.roleId,
-      ];
-      db.query(sql, params, (err, res) => {
-        if (err) {
-          console.log(err);
-        }
-        console.log(
-          `${(employeeData.first, employeeData.last)} has been added.`
-        );
-
-        returnPrompt();
-      });
     });
+  const sql = `INSERT INTO employee (first_name, last_name, role_id)
+    VALUES (?, ?, ?);`;
+  const params = [employeeData.first, employeeData.last, employeeData.roleId];
+  db.query(sql, params, (err, res) => {
+    if (err) {
+      console.log(err);
+    }
+    console.log(`${(employeeData.first, employeeData.last)} has been added.`);
+
+    returnPrompt();
+  });
 };
 // update role
 updateRole = () => {
