@@ -19,3 +19,7 @@
 Watch this video to see how to use the Employee Tracker through the command-line!
 
 
+
+
+https://user-images.githubusercontent.com/98433176/166179532-22264402-65aa-4724-ab95-f8ff424038a6.mp4
+
